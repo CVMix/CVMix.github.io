@@ -95,12 +95,19 @@ img {
   max-width:100%;
 }
 
-menu {
+/* Both menu and footer are on the left */
+menu, footer {
   width:270px;
-  height:calc(100% - 220px);
+  padding-right:25px;
+  min-height:100px;
   float:left;
   position:fixed;
-  overflow-x:hidden;
+}
+
+menu {
+  /* Leave space for footer */
+  height:calc(100% - 220px);
+  /* Need vertical scrolling if browser isn't tall enough */
   overflow-y:auto;
 }
 
@@ -163,10 +170,11 @@ menu ul a strong {
 }
 
 main {
-  width:calc(860px - 370px);
-  height:calc(100% - 220px);
   float:right;
-  padding-right:calc(100% - 860px);
+  /* Wrapper maxes out at 860px, menu is 270px,
+     menu padding for scroll bar is 25px, 75px white space */
+  width:calc(860px - 270px - 25px - 75px);
+  /* Bottom of page should line up with bottom of menu */
   padding-bottom:200px;
 }
 
@@ -182,9 +190,7 @@ hr {
 }
 
 footer {
-  width:270px;
-  float:left;
-  position:fixed;
+  /* Position footer at bottom of screen (plus padding) */
   bottom:50px;
 }
 
