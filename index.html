@@ -1,10 +1,108 @@
-<title>CVMix</title>
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <title>Community Vertical Mixing Package</title>
 
-<body>
-<p>This is just a placeholder webpage made on January 31, 2014. This will hopefully be replaced sometime in February but until then please refer to <a href="https://github.com/CVMix/">the CVMix repositories</a> for any necessary information.</p>
+  <link rel="stylesheet" href="stylesheets/styles.css">
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
 
-<p>It should point to things like <a href="https://github.com/CVMix/CVMix-description/raw/master/cvmix.pdf">Steve's scientific description</a> and <a href="https://github.com/CVMix/CVMix-src/raw/master/doc/protex_documentation.pdf">the protex documentation</a>.</p>
+<body><div class="wrapper">
+  <header>
 
-<p>It should also mention that CVMix can be downloaded from <a href="CVMix-src/">here</a>.
-</body>
+<h1>CVMix</h1>
 
+<p>CVMix source code (including protex documentation) as well as build system and examples / tests</p>
+
+<p class="view"><a href="https://github.com/CVMix/CVMix-src">View the Project on GitHub <small>CVMix/CVMix-src</small></a></p>
+    
+<ul>
+  <li><a href="https://github.com/CVMix/CVMix-src/zipball/master">Download <strong>ZIP File</strong></a></li>
+  <li><a href="https://github.com/CVMix/CVMix-src/tarball/master">Download <strong>TAR Ball</strong></a></li>
+  <li><a href="https://github.com/CVMix/CVMix-src">View On <strong>GitHub</strong></a></li>
+</ul>
+
+<hr>
+
+<h2>Table of Contents</h2>
+<p>1. <a href="index.html#top">About CVMix</a><br>
+2. <a href="index.html#building">How to Build CVMix</a><br>
+3. <a href="index.html#running">How to Run CVMix</a><br>
+4. <a href="index.html#authors">Contributor List</a></p>
+
+<h2>Useful Documents</h2>
+<p>1. The <a href="https://github.com/CVMix/CVMix-description/raw/master/cvmix.pdf">scientific description</a> of CVMix<br>
+2. Protex-generated <a href="https://github.com/CVMix/CVMix-src/raw/master/doc/protex_documentation.pdf">documentation of the code</a></p>
+
+<h2>Contact Information</h2>
+<p>Questions about CVMix or this webpage should be directed to <a href="http://github.com/mnlevy1981">Michael Levy</a> (mlevy_AT_ucar_DOT_edu)</p>
+
+  </header>
+
+  <section>
+
+<h3><a name="top" class="anchor" href="#top"><span class="octicon octicon-link"></span></a>About CVMix / How to Download</h3>
+
+<p>The Community Vertical Mixing Project (CVMix) is a portable vertical mixing software package providing an extensible framework for the development of first-order closures. It can be downloaded via the links at the left or cloned directly from github:</p>
+
+<pre><code>$ git clone git@github.com:CVMix/CVMix-src.git
+</code></pre>
+
+<p>The scientific description of the project and data needed for some of the stand-alone test cases provided are available from the <a href="https://github.com/CVMix/">CVMix project page</a> on github.</p>
+
+<h3><a name="building" class="anchor" href="#building"><span class="octicon octicon-link"></span></a>How to Build</h3>
+
+CVMix offers two options for building:</p>
+<ol>
+  <li><p>The primary goal of the model is to provide a selection of vertical mixing libraries for use in ocean general circulation models (OGCMs). This only requires building libcvmix.a, which can be done by running <code>make</code> in the <code>src/shared/</code> directory. When you run <code>make</code>, you must pass the name of the compiler to use via the <code>$(FC)</code> variable to the <code>Makefile</code>; you can also pass compiler flags in the <code>$(FCFLAGS)</code> variable. Further, you can specify four directories (default value of each is the current directory):</p>
+    <ul>
+      <li><code>SRC_DIR</code> -- directory containing the mixing modules (<code>src/shared/</code>)
+      <li><code>OBJ_DIR</code> -- directory to store <code>.o</code> and <code>.mod</code> files when compiling.
+      <li><code>INC_DIR</code> -- directory to store <code>.mod</code> files. When you compile your OGCM, you want to compile your model with the <code>-I$(INC_DIR)</code> option. This directory can be the same as <code>$(OBJ_DIR)</code>.
+      <li><code>LIB_DIR</code> -- directory to store <code>libcvmix.a</code> file. When you compile your OGCM, you want to link your model with the <code>-L$(LIB_DIR) -lcvmix</code> flag.
+    </ul>
+    <p>For example, in CESM the POP ocean model build is launched from a c-shell script that reads in CESM environment variables; the CVMix library is built by running</p>
+    <pre><code>gmake -f $CODEROOT/ocn/pop2/source/cvmix/Makefile   \
+         SRC_DIR=$CODEROOT/ocn/pop2/source/cvmix    \
+         FC=$FC FCFLAGS="$FFLAGS $FREEFLAGS"        \
+         LIB_DIR=$LIBROOT</code></pre>
+    <p>where <code>$CODEROOT/ocn/pop2/source/cvmix</code> is a copy of the <code>src/shared/</code> directory of the CVMix repository.</li>
+  <li><p>CVMix also provides a stand-alone mode to test the library on new machines and to aid in development. There is a simple I/O routine that can be compiled with or without netCDF support and some NCL scripts to produce plots for comparison. Developers wishing to add a mixing module to the library must also provide a stand-alone driver for regression testing.</p>
+      <p>The executable for the stand-alone driver is <code>bin/cvmix</code>, which can be built by running <code>make</code> from the <code>src/</code> directory. The first time you try to build the driver, you will be prompted to enter your compiler (there is no parallel code at this time, so a serial compiler is fine) and the location of netcdf (which is only used if you build the <code>netcdf</code> target). At this time, the following compilers are supported:</p>
+    <ul>
+      <li><code>gfortran</code></li>
+      <li><code>pgf90</code></li>
+      <li><code>ifort</code></li>
+      <li><code>xlf90</code></li>
+      <li><code>nagfor</code></li>
+      <li><code>pathf95</code></li>
+      <li><code>ftn</code>, provided the environment variable <code>PE_ENV</code> is one of the following: <code>GNU</code>, <code>PGI</code>, <code>INTEL</code>, <code>PATHSCALE</code>, or <code>CRAY</code>.</li>
+    </ul>
+    <p>Given one of the above compilers, the compiler flags will be set as specified in <code>bld/CompileFlags.mak</code>. The supported compilers put object and module files in <code>bld/obj</code> and build at the <code>O2</code> optimization level. The GNU and Intel compilers will also exit on warnings.
+</ol>
+
+<h3><a name="running" class="anchor" href="#running"><span class="octicon octicon-link"></span></a>How to Run the Stand-alone Driver</h3>
+
+<h3><a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>This project is a collaboration driven mainly by the Geophysical Fluid Dynamics Laboratory, Los Alamos National Laboratory, and the National Center for Atmospheric Research. The main contributors are Stephen Griffies, Alistair Adcroft, and Robert Hallberg from GFDL; Todd Ringler and Douglas Jacobsen from LANL; Gokhan Danabasoglu, William Large, and Michael Levy from NCAR.</p>
+
+  </section>
+
+  <footer>
+
+<p>This project is maintained by <a href="https://github.com/CVMix">CVMix</a></p>
+
+<p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+
+  </footer>
+
+</div><script src="javascripts/scale.fix.js"></script></body>
+
+</html>
